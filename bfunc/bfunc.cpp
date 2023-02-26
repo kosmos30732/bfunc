@@ -1,7 +1,6 @@
 ﻿#include <string>
 #include <iostream>
 #include <cmath>
-#include <ctime>
 #include <bitset>
 
 class BF
@@ -42,6 +41,14 @@ public:
 				vec[vec_len - (i >> 5) - 1] |= 1;
 			}
 		}
+
+		//for (size_t i = 0; i < vec_len; i++)
+		//{
+		//	std::bitset<32> st(vec[i]);
+		//	std::string str = st.to_string();
+		//	std::cout << str << " " << i << std::endl;
+		//}
+
 	}
 
 	/*
@@ -163,9 +170,9 @@ public:
 		return out;
 	}
 
-	uint32_t weight()
+	uint64_t weight()
 	{
-		uint32_t res = 0;
+		uint64_t res = 0;
 		for (size_t i = 0; i < vec_len; i++)
 		{
 			uint32_t tmp = vec[i];

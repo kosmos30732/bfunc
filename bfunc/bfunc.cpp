@@ -41,14 +41,12 @@ public:
 				vec[vec_len - (i >> 5) - 1] |= 1;
 			}
 		}
-
 		//for (size_t i = 0; i < vec_len; i++)
 		//{
 		//	std::bitset<32> st(vec[i]);
 		//	std::string str = st.to_string();
 		//	std::cout << str << " " << i << std::endl;
 		//}
-
 	}
 
 	/*
@@ -66,29 +64,40 @@ public:
 		}
 
 		len = _len;
-		vec_len = ((1 << int(log2(len))) + 31) >> 5;
+		vec_len = ((uint64_t(1) << uint64_t(log2(len))) + uint64_t(31)) >> 5;
 		vec = new uint32_t[vec_len];
 
 		if (type == 2)
 		{
-			for (size_t i = 0; i < vec_len; i++)
+			if (len<=16)
 			{
-				vec[i] = 0;
+				vec[0] = 0;
+				vec[0]|=uint16_t(rand() - rand())>>(16-len);
 			}
-			for (uint32_t i = 0; i < len; i++)
+			else
 			{
-				if (rand() % 2)
+				for (uint32_t i = 0; i < vec_len; i++)
 				{
-					vec[i >> 5] |= (1 << (i % 32));
+					vec[i] = uint16_t(rand() - rand());
+					vec[i] = vec[i] << 16;
+					vec[i] |= uint16_t(rand() - rand());
 				}
 			}
 		}
 
 		if (type == 1)
 		{
-			for (size_t i = 0; i < vec_len; i++)
+			if (len <= 16)
 			{
-				vec[i] = UINT32_MAX;
+				vec[0] = UINT16_MAX;
+				vec[0] = vec[0] >> 16-len;
+			}
+			else
+			{
+				for (size_t i = 0; i < vec_len; i++)
+				{
+					vec[i] = UINT32_MAX;
+				}
 			}
 		}
 
@@ -166,13 +175,12 @@ public:
 				out << str;
 			}
 		}
-
 		return out;
 	}
 
-	uint64_t weight()
+	uint32_t weight()
 	{
-		uint64_t res = 0;
+		uint32_t res = 0;
 		for (size_t i = 0; i < vec_len; i++)
 		{
 			uint32_t tmp = vec[i];

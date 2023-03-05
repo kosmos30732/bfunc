@@ -69,10 +69,10 @@ public:
 
 		if (type == 2)
 		{
-			if (len<=16)
+			if (len <= 16)
 			{
 				vec[0] = 0;
-				vec[0]|=uint16_t(rand() - rand())>>(16-len);
+				vec[0] |= uint16_t(rand() - rand()) >> (16 - len);
 			}
 			else
 			{
@@ -90,7 +90,7 @@ public:
 			if (len <= 16)
 			{
 				vec[0] = UINT16_MAX;
-				vec[0] = vec[0] >> 16-len;
+				vec[0] = vec[0] >> (16 - len);
 			}
 			else
 			{
@@ -125,7 +125,7 @@ public:
 		vec_len = other.vec_len;
 		vec = new uint32_t[vec_len];
 
-		for (int i = 0; i < vec_len; i++)
+		for (size_t i = 0; i < vec_len; i++)
 		{
 			vec[i] = other.vec[i];
 		}
@@ -149,7 +149,7 @@ public:
 		vec_len = other.vec_len;
 		vec = new uint32_t[vec_len];
 
-		for (int i = 0; i < vec_len; i++)
+		for (size_t i = 0; i < vec_len; i++)
 		{
 			vec[i] = other.vec[i];
 		}
@@ -168,7 +168,7 @@ public:
 		}
 		else
 		{
-			for (int i = 0; i < other.vec_len; i++)
+			for (size_t i = 0; i < other.vec_len; i++)
 			{
 				std::bitset<32> st(other.vec[other.vec_len - i - 1]);
 				std::string str = st.to_string();
@@ -201,7 +201,7 @@ public:
 			return false;
 		}
 
-		for (int i = 0; i < vec_len; i++)
+		for (size_t i = 0; i < vec_len; i++)
 		{
 			if (other.vec[i] != vec[i])
 			{
@@ -215,6 +215,72 @@ public:
 	bool operator != (const BF other)
 	{
 		return !(*this == other);
+	}
+
+	void printByVec()
+	{
+		for (size_t i = 0; i < vec_len; i++)
+		{
+			std::bitset<32> s(vec[i]);
+			std::cout << s.to_string() << " " << i << std::endl;
+		}
+	}
+
+	BF mebius()
+	{
+		BF g(0);
+		g = *this;
+		if (len == 2)
+		{
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 1) & 0x55555555);
+			return g;
+		}
+		if (len == 4)
+		{
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 1) & 0x55555555);
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 2) & 0x33333333);
+			return g;
+		}
+		if (len == 8)
+		{
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 1) & 0x55555555);
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 2) & 0x33333333);
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 4) & 0x0f0f0f0f);
+			return g;
+		}
+		if (len == 16)
+		{
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 1) & 0x55555555);
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 2) & 0x33333333);
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 4) & 0x0f0f0f0f);
+			g.vec[0] = g.vec[0] ^ ((g.vec[0] >> 8) & 0x00ff00ff);
+			return g;
+		}
+		if (len >= 32)
+		{
+			for (size_t i = 0; i < vec_len; i++)
+			{
+				g.vec[i] ^= ((g.vec[i] >> 1) & 0x55555555);
+				g.vec[i] ^= ((g.vec[i] >> 2) & 0x33333333);
+				g.vec[i] ^= ((g.vec[i] >> 4) & 0x0f0f0f0f);
+				g.vec[i] ^= ((g.vec[i] >> 8) & 0x00ff00ff);
+				g.vec[i] ^= ((g.vec[i] >> 16) & 0x0000ffff);
+			}
+
+			uint32_t l_2 = log2(len);
+			for (uint32_t k = 0; k < l_2 - 5; k++)
+			{
+				for (uint32_t l = 0; l < (1 << (l_2 - 6 - k)); l++)
+				{
+					for (uint32_t i = l * (1 << (k + 1)), j = i + (1 << k), p = 0; p < (1 << k); p++, i++, j++)
+					{
+						g.vec[i] ^= g.vec[j];
+					}
+				}
+			}
+			return g;
+		}
+		return  g;
 	}
 };
 

@@ -59,5 +59,8 @@ int main()
     //std::bitset<32> st(vec[0]);
     //std::string str = st.to_string();
     //std::cout << str << " " << std::endl;
+
+    BF x("0001000111101110111011100001000111010010110100100010110100101101");
+    std::cout << x.anf() << std::endl;
     return 0;
 }

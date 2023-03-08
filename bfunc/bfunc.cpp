@@ -163,7 +163,7 @@ public:
 		{
 			std::bitset<32> st(other.vec[0]);
 			std::string str = st.to_string();
-			str.erase(0, 32 - other.len);
+			str.erase(0, size_t(32) - other.len);
 			out << str;
 		}
 		else
@@ -178,6 +178,7 @@ public:
 		return out;
 	}
 
+	//взвешивание булевой функции
 	uint32_t weight()
 	{
 		uint32_t res = 0;
@@ -281,6 +282,170 @@ public:
 			return g;
 		}
 		return  g;
+	}
+
+	/*
+	* Вывод АНФ
+	* при type == true — с преобразованием мебиуса
+	* при type == false — без преобразования мебиуса (уже сделано для вызвавшего вектора)
+	*/
+	std::string anf(bool type = true)
+	{
+		std::string res;
+		uint8_t power = 1, tmp_p = 0;
+		if (type)
+		{
+			BF y(0);
+			y = this->mebius();
+			uint32_t n = log2(len);
+			if (y.len < 32)
+			{
+				std::bitset<32> st(y.vec[0]);
+				std::string str = st.to_string();
+				str.erase(0, size_t(32) - y.len);
+				if (str[0] == '1')
+				{
+					res += '1+';
+				}
+				for (size_t i = 1; i < str.length(); i++)
+				{
+					if (str[i] == '1')
+					{
+						std::bitset<32> st2(i);
+						std::string str2 = st2.to_string();
+						str2.erase(0, size_t(32) - n);
+						for (size_t j = 0; j < str2.length(); j++)
+						{
+							if (str2[j] == '1')
+							{
+								tmp_p++;
+								res += 'X';
+								res += std::to_string((j + 1));
+							}
+						}
+						if (tmp_p > power)
+						{
+							power = tmp_p;
+						}
+						tmp_p = 0;
+						res += '+';
+					}
+				}
+			}
+			else
+			{
+				if ((y.vec[y.vec_len - 1] >> 31) & 1)
+				{
+					res += '1+';
+				}
+				for (size_t k = 0; k < y.vec_len; k++)
+				{
+					std::bitset<32> st(y.vec[y.vec_len - k - 1]);
+					std::string str = st.to_string();
+					for (size_t i = 0; i < str.length(); i++)
+					{
+						if (str[i] == '1')
+						{
+							std::bitset<32> st2((i + (1 << 5) * k));
+							std::string str2 = st2.to_string();
+							str2.erase(0, size_t(32) - n);
+							for (size_t j = 0; j < str2.length(); j++)
+							{
+								if (str2[j] == '1')
+								{
+									tmp_p++;
+									res += 'X';
+									res += std::to_string((j + 1));
+								}
+							}
+							if (tmp_p > power)
+							{
+								power = tmp_p;
+							}
+							tmp_p = 0;
+							res += '+';
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			uint32_t n = log2(len);
+			if (len < 32)
+			{
+				std::bitset<32> st(vec[0]);
+				std::string str = st.to_string();
+				str.erase(0, size_t(32) - len);
+				if (str[0] == '1')
+				{
+					res += '1+';
+				}
+				for (size_t i = 1; i < str.length(); i++)
+				{
+					if (str[i] == '1')
+					{
+						std::bitset<32> st2(i);
+						std::string str2 = st2.to_string();
+						str2.erase(0, size_t(32) - n);
+						for (size_t j = 0; j < str2.length(); j++)
+						{
+							if (str2[j] == '1')
+							{
+								tmp_p++;
+								res += 'X';
+								res += std::to_string((j + 1));
+							}
+						}
+						if (tmp_p > power)
+						{
+							power = tmp_p;
+						}
+						tmp_p = 0;
+						res += '+';
+					}
+				}
+			}
+			else
+			{
+				if ((vec[vec_len - 1] >> 31) & 1)
+				{
+					res += '1+';
+				}
+				for (size_t k = 0; k < vec_len; k++)
+				{
+					std::bitset<32> st(vec[vec_len - k - 1]);
+					std::string str = st.to_string();
+					for (size_t i = 0; i < str.length(); i++)
+					{
+						if (str[i] == '1')
+						{
+							std::bitset<32> st2((i + (1 << 5) * k));
+							std::string str2 = st2.to_string();
+							str2.erase(0, size_t(32) - n);
+							for (size_t j = 0; j < str2.length(); j++)
+							{
+								if (str2[j] == '1')
+								{
+									tmp_p++;
+									res += 'X';
+									res += std::to_string((j + 1));
+								}
+							}
+							if (tmp_p > power)
+							{
+								power = tmp_p;
+							}
+							tmp_p = 0;
+							res += '+';
+						}
+					}
+				}
+			}
+		}
+		res[res.length() - 1] = '\n';
+		res += "power = " + std::to_string(power);
+		return res;
 	}
 };
 

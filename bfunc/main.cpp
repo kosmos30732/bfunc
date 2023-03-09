@@ -26,6 +26,44 @@ int main()
     //for (size_t i = 2; i < 32; i++)
     //{
     //    auto begin = std::chrono::steady_clock::now();
+    //    BF x(0, 1 << i);
+    //    auto end = std::chrono::steady_clock::now();
+    //    auto t_gen = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+    //    BF y(0), z(0);
+    //    begin = std::chrono::steady_clock::now();
+    //    y = x.mebius();
+    //    end = std::chrono::steady_clock::now();
+    //    auto t_mebius = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+    //    z = y.mebius();
+    //    std::cout << "Arg =" << i
+    //        << "\tTime_gen =" << t_gen
+    //        << "\tTime_mebius =" << t_mebius
+    //        << "\tEqual after 2 mebius? =" << ((x == z) ? "true" : "No");
+    //    std::cout << std::endl;
+    //}
+    //std::cout << std::endl;
+    //for (size_t i = 2; i < 32; i++)
+    //{
+    //    auto begin = std::chrono::steady_clock::now();
+    //    BF x(1, 1 << i);
+    //    auto end = std::chrono::steady_clock::now();
+    //    auto t_gen = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+    //    BF y(0), z(0);
+    //    begin = std::chrono::steady_clock::now();
+    //    y = x.mebius();
+    //    end = std::chrono::steady_clock::now();
+    //    auto t_mebius = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+    //    z = y.mebius();
+    //    std::cout << "Arg =" << i
+    //        << "\tTime_gen =" << t_gen
+    //        << "\tTime_mebius =" << t_mebius
+    //        << "\tEqual after 2 mebius? =" << ((x == z) ? "true" : "No");
+    //    std::cout << std::endl;
+    //}
+    //std::cout << std::endl;
+    //for (size_t i = 2; i < 32; i++)
+    //{
+    //    auto begin = std::chrono::steady_clock::now();
     //    BF x(2, 1 << i);
     //    auto end = std::chrono::steady_clock::now();
     //    auto t_gen = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
@@ -35,13 +73,16 @@ int main()
     //    end = std::chrono::steady_clock::now();
     //    auto t_mebius = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
     //    z = y.mebius();
-    //    
     //    std::cout << "Arg =" << i
     //        << "\tTime_gen =" << t_gen
     //        << "\tTime_mebius =" << t_mebius
     //        << "\tEqual after 2 mebius? =" << ((x == z) ? "true" : "No");
     //    std::cout << std::endl;
     //}
+    //00110011011001100011001010010111
+    BF x("0001000100011110000100010001111000010001000111101110111011100001");
+    std::cout << x.anf() << std::endl;
+
 
     //    std::cout << "vec_size =" << i << "   weight/vec_size =" << long double(w) / (uint64_t(1) << i) << "\tTime gen: " << ms.count() << "\tTime weight: "<<ms_weight.count()<< std::endl;
     //}
@@ -60,7 +101,5 @@ int main()
     //std::string str = st.to_string();
     //std::cout << str << " " << std::endl;
 
-    BF x("0001000111101110111011100001000111010010110100100010110100101101");
-    std::cout << x.anf() << std::endl;
     return 0;
 }

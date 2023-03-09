@@ -286,106 +286,74 @@ public:
 
 	/*
 	* Вывод АНФ
-	* при type == true — с преобразованием мебиуса
-	* при type == false — без преобразования мебиуса (уже сделано для вызвавшего вектора)
+	* при result = 3 — вывод АНФ и степени
+	* при result = 2 — вывод АНФ
+	* при result = 1 — вывод степени
 	*/
-	std::string anf(bool type = true)
+	std::string anf(uint8_t result=3)
 	{
 		std::string res;
-		uint8_t power = 1, tmp_p = 0;
-		if (type)
+		uint32_t n = log2(len);
+		uint8_t power = 0, tmp_p = 0;
+		BF y(0), z_0(0,len);
+		y = this->mebius();
+		if (y==z_0)
 		{
-			BF y(0);
-			y = this->mebius();
-			uint32_t n = log2(len);
-			if (y.len < 32)
+			res += '0';
+			goto skip;
+		}
+		if (y.len < 32)
+		{
+			std::bitset<32> st(y.vec[0]);
+			std::string str = st.to_string();
+			str.erase(0, size_t(32) - y.len);
+			if (str[0] == '1')
 			{
-				std::bitset<32> st(y.vec[0]);
-				std::string str = st.to_string();
-				str.erase(0, size_t(32) - y.len);
-				if (str[0] == '1')
-				{
-					res += '1+';
-				}
-				for (size_t i = 1; i < str.length(); i++)
-				{
-					if (str[i] == '1')
-					{
-						std::bitset<32> st2(i);
-						std::string str2 = st2.to_string();
-						str2.erase(0, size_t(32) - n);
-						for (size_t j = 0; j < str2.length(); j++)
-						{
-							if (str2[j] == '1')
-							{
-								tmp_p++;
-								res += 'X';
-								res += std::to_string((j + 1));
-							}
-						}
-						if (tmp_p > power)
-						{
-							power = tmp_p;
-						}
-						tmp_p = 0;
-						res += '+';
-					}
-				}
+				res += "1+";
 			}
-			else
+			for (size_t i = 1; i < str.length(); i++)
 			{
-				if ((y.vec[y.vec_len - 1] >> 31) & 1)
+				if (str[i] == '1')
 				{
-					res += '1+';
-				}
-				for (size_t k = 0; k < y.vec_len; k++)
-				{
-					std::bitset<32> st(y.vec[y.vec_len - k - 1]);
-					std::string str = st.to_string();
-					for (size_t i = 0; i < str.length(); i++)
+					std::bitset<32> st2(i);
+					std::string str2 = st2.to_string();
+					str2.erase(0, size_t(32) - n);
+					for (size_t j = 0; j < str2.length(); j++)
 					{
-						if (str[i] == '1')
+						if (str2[j] == '1')
 						{
-							std::bitset<32> st2((i + (1 << 5) * k));
-							std::string str2 = st2.to_string();
-							str2.erase(0, size_t(32) - n);
-							for (size_t j = 0; j < str2.length(); j++)
-							{
-								if (str2[j] == '1')
-								{
-									tmp_p++;
-									res += 'X';
-									res += std::to_string((j + 1));
-								}
-							}
-							if (tmp_p > power)
-							{
-								power = tmp_p;
-							}
-							tmp_p = 0;
-							res += '+';
+							tmp_p++;
+							res += "X";
+							res += std::to_string((j + 1));
 						}
+					}
+					if (tmp_p > power)
+					{
+						power = tmp_p;
+					}
+					tmp_p = 0;
+					if (res[res.length() - 1] != '+')
+					{
+						res += "+";
 					}
 				}
 			}
 		}
 		else
 		{
-			uint32_t n = log2(len);
-			if (len < 32)
+			if ((y.vec[y.vec_len - 1] >> 31) & 1)
 			{
-				std::bitset<32> st(vec[0]);
+				res += "1+";
+			}
+			for (size_t k = 0; k < y.vec_len; k++)
+			{
+				std::bitset<32> st(y.vec[y.vec_len - k - 1]);
 				std::string str = st.to_string();
-				str.erase(0, size_t(32) - len);
-				if (str[0] == '1')
-				{
-					res += '1+';
-				}
-				for (size_t i = 1; i < str.length(); i++)
+				for (size_t i = 0; i < str.length(); i++)
 				{
 					if (str[i] == '1')
 					{
-						std::bitset<32> st2(i);
+						std::bitset<32> st2((i + (1 << 5) * k));
 						std::string str2 = st2.to_string();
 						str2.erase(0, size_t(32) - n);
 						for (size_t j = 0; j < str2.length(); j++)
@@ -393,7 +361,7 @@ public:
 							if (str2[j] == '1')
 							{
 								tmp_p++;
-								res += 'X';
+								res += "X";
 								res += std::to_string((j + 1));
 							}
 						}
@@ -402,49 +370,34 @@ public:
 							power = tmp_p;
 						}
 						tmp_p = 0;
-						res += '+';
-					}
-				}
-			}
-			else
-			{
-				if ((vec[vec_len - 1] >> 31) & 1)
-				{
-					res += '1+';
-				}
-				for (size_t k = 0; k < vec_len; k++)
-				{
-					std::bitset<32> st(vec[vec_len - k - 1]);
-					std::string str = st.to_string();
-					for (size_t i = 0; i < str.length(); i++)
-					{
-						if (str[i] == '1')
+						if (res[res.length() - 1] != '+')
 						{
-							std::bitset<32> st2((i + (1 << 5) * k));
-							std::string str2 = st2.to_string();
-							str2.erase(0, size_t(32) - n);
-							for (size_t j = 0; j < str2.length(); j++)
-							{
-								if (str2[j] == '1')
-								{
-									tmp_p++;
-									res += 'X';
-									res += std::to_string((j + 1));
-								}
-							}
-							if (tmp_p > power)
-							{
-								power = tmp_p;
-							}
-							tmp_p = 0;
-							res += '+';
+							res += "+";
 						}
 					}
 				}
 			}
 		}
-		res[res.length() - 1] = '\n';
-		res += "power = " + std::to_string(power);
+
+		if (res[res.length()-1]=='+')
+		{
+			res.erase(res.length() - 1, 1);
+		}
+		skip:
+		if (result==3)
+		{
+			res += "\npower = " + std::to_string(power);
+			return res;
+		}
+		if (result==2)
+		{
+			return res;
+		}
+		if (result==1)
+		{
+			res= "power = " + std::to_string(power);
+			return res;
+		}
 		return res;
 	}
 };

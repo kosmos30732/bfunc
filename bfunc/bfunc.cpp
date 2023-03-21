@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <bitset>
+#include <vector>
 
 class BF
 {
@@ -290,14 +291,14 @@ public:
 	* при result = 2 — вывод АНФ
 	* при result = 1 — вывод степени
 	*/
-	std::string anf(uint8_t result=3)
+	std::string anf(uint8_t result = 3)
 	{
 		std::string res;
 		uint32_t n = log2(len);
 		uint8_t power = 0, tmp_p = 0;
-		BF y(0), z_0(0,len);
+		BF y(0), z_0(0, len);
 		y = this->mebius();
-		if (y==z_0)
+		if (y == z_0)
 		{
 			res += '0';
 			goto skip;
@@ -379,26 +380,79 @@ public:
 			}
 		}
 
-		if (res[res.length()-1]=='+')
+		if (res[res.length() - 1] == '+')
 		{
 			res.erase(res.length() - 1, 1);
 		}
-		skip:
-		if (result==3)
+	skip:
+		if (result == 3)
 		{
 			res += "\npower = " + std::to_string(power);
 			return res;
 		}
-		if (result==2)
+		if (result == 2)
 		{
 			return res;
 		}
-		if (result==1)
+		if (result == 1)
 		{
-			res= "power = " + std::to_string(power);
+			res = "power = " + std::to_string(power);
 			return res;
 		}
 		return res;
+	}
+
+	std::vector<int32_t> yolsha()
+	{
+		std::vector<int32_t> f(len);
+		if (len < 32)
+		{
+			for (size_t i = 0; i < len; i++)
+			{
+				if (vec[0] & (1 << (len - i - 1)))
+				{
+					f[i] = -1;
+				}
+				else
+				{
+					f[i] = 1;
+				}
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < vec_len; i++)
+			{
+				for (size_t j = 0; j < 32; j++)
+				{
+					if (vec[vec_len - 1 - i] & (1 << (31 - j)))
+					{
+						f[j + 32 * i] = -1;
+					}
+					else
+					{
+						f[j + 32 * i] = 1;
+					}
+				}
+			}
+		}
+
+		uint32_t l_2 = log2(len);
+		for (uint32_t k = 0; k < l_2; k++)
+		{
+			for (uint32_t l = 0; l < (1 << (l_2 - 1 - k)); l++)
+			{
+				for (uint32_t i = l * (1 << (k + 1)), j = i + (1 << k), p = 0; p < (1 << k); p++, i++, j++)
+				{
+					f[i] = f[i] + f[j];
+				}
+				for (uint32_t i = l * (1 << (k + 1)), j = i + (1 << k), p = 0; p < (1 << k); p++, i++, j++)
+				{
+					f[j] = f[i] - f[j] - f[j];
+				}
+			}
+		}
+		return f;
 	}
 };
 

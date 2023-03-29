@@ -141,7 +141,7 @@ int main()
 	//BF x("0001000100011110000100010001111000010001000111101110111011100001");
 	//std::cout << x.anf() << std::endl;
 	// 
-	//BF x("1111111111111111");
+	//BF x("10110111");
 	//std::vector<int32_t>h;
 	//h = x.yolsha();
 	//for (auto s : h)
@@ -149,6 +149,17 @@ int main()
 	//    std::cout <<" "<< s;
 	//}
 	//std::cout << std::endl;
+
+	//for (size_t i = 0; i < 9;)
+	//{
+	//	BF x(0, 1<<9);
+	//	uint32_t r = x.cor_i();
+	//	if (r>1)
+	//	{
+	//		std::cout << x << "\n cor=" << r << std::endl;
+	//		i++;
+	//	}
+	//}
 
 	return 0;
 }

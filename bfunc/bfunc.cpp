@@ -4,6 +4,7 @@
 #include <bitset>
 #include <vector>
 
+
 class BF
 {
 	uint32_t  len = 0;          //используемая память
@@ -453,6 +454,40 @@ public:
 			}
 		}
 		return f;
+	}
+	
+	uint32_t cor_i()
+	{
+		std::vector<int32_t>_f = this->yolsha();
+		uint32_t n = log2(_f.size()), a = 0, b = 0, c = 0, tmp = 0, tmp_a = 0, res = 0;
+		for (size_t k = 1; k <= n; k++)
+		{
+			a = ((1 << k) - 1) << (n - k);
+			tmp_a = a;
+			while (true)
+			{
+				if (_f[a] != 0)
+				{
+					return res;
+				}
+				b = (a + 1) & a;
+				tmp = (b - 1) ^ a;
+				tmp = (tmp & 0x55555555L) + ((tmp >> 1) & 0x55555555L);
+				tmp = (tmp & 0x33333333L) + ((tmp >> 2) & 0x33333333L);
+				tmp = (tmp + (tmp >> 4)) & 0x0F0F0F0FL;
+				tmp = tmp + (tmp >> 8);
+				c = (uint8_t)(tmp + (tmp >> 16)) & 0x3F;
+				c -= 2;
+				a = (((((a + 1) ^ a) << 1) + 1) << c) ^ b;
+				if (a > tmp_a)
+				{
+					break;
+				}
+				tmp_a = a;
+			}
+			res++;
+		}
+		return res;
 	}
 };
 

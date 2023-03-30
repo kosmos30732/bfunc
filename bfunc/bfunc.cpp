@@ -3,6 +3,7 @@
 #include <cmath>
 #include <bitset>
 #include <vector>
+#include <algorithm>
 
 
 class BF
@@ -489,5 +490,43 @@ public:
 		}
 		return res;
 	}
-};
 
+	std::string nf_nap()
+	{
+		std::vector<int32_t>_f = this->yolsha();
+		auto minmax = std::minmax_element(_f.begin(), _f.end());
+		uint32_t m_x = std::max(std::abs(*minmax.first), *minmax.second);
+		uint32_t nf = (len >> 1) - ((m_x) >> 1);
+		std::string res;
+		res += "N_f ="+std::to_string(nf) + " \nNAP:\n\t";
+		uint32_t n = log2(len);
+		for (size_t i = 0; i < _f.size(); i++)
+		{
+			if (std::abs(_f[i])==m_x)
+			{
+				std::bitset<32> st2(i);
+				std::string str2 = st2.to_string();
+				str2.erase(0, size_t(32) - n);
+				for (size_t j = 0; j < str2.length(); j++)
+				{
+					if (str2[j] == '1')
+					{
+						res += "X";
+						res += std::to_string((j + 1));
+						res += "+";
+					}
+				}
+				if (_f[i]<0)
+				{
+					res += "1\n\t";
+				}
+				else
+				{
+					res.erase(res.length() - 1, 1);
+					res += "\n\t";
+				}
+			}
+		}
+		return res;
+	}
+};

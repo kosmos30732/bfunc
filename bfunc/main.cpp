@@ -150,16 +150,31 @@ int main()
 	//}
 	//std::cout << std::endl;
 
-	//for (size_t i = 0; i < 9;)
+	//тестирование 4
+
+	//for (size_t i = 2; i < 32; i++)
 	//{
-	//	BF x(0, 1<<9);
-	//	uint32_t r = x.cor_i();
-	//	if (r>1)
-	//	{
-	//		std::cout << x << "\n cor=" << r << std::endl;
-	//		i++;
-	//	}
+	//	auto begin = std::chrono::steady_clock::now();
+	//	BF x(0, 1 << i);
+	//	auto end = std::chrono::steady_clock::now();
+	//	auto t_gen = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+	//	uint32_t r = 0;
+	//	begin = std::chrono::steady_clock::now();
+	//	r = x.cor_i();
+	//	end = std::chrono::steady_clock::now();
+	//	auto t_cor = std::chrono::duration_cast<std::chrono::milliseconds>(end - begin);
+	//	std::cout << "Arg =" << i
+	//		<< "\tTime_gen =" << t_gen
+	//		<< "\tTime_cor =" << t_cor
+	//		<< "\tCor =" <<r;
+	//	std::cout << std::endl;
 	//}
+	//BF x("01101001");
+	//uint32_t r = x.cor_i();
+	//std::cout << x << "\n cor=" << r << std::endl;
+
+	BF x("10010110");
+	std::cout << x.nf_nap();
 
 	return 0;
 }

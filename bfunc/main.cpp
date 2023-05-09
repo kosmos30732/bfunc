@@ -173,8 +173,30 @@ int main()
 	//uint32_t r = x.cor_i();
 	//std::cout << x << "\n cor=" << r << std::endl;
 
-	BF x("10010110");
-	std::cout << x.nf_nap();
+	//BF x("01100110");
+	//std::cout <<"ANF ="<< x.anf(3) << std::endl;
+	//std::cout << "cor_i ="<< x.cor_i() << std::endl;
+	//std::cout << x.nf_nap() << std::endl;
+	//BF z(1, 32);
+	//z = x.mebius();
+	//std::cout <<"Mebius ="<< z << std::endl;
+	//std::vector<int32_t> ff = x.yolsha();
+	//std::cout << "Yolsha =";
+	//for (auto i : ff)
+	//{
+	//	std::cout << " " << i;
+	//}
+
+	BF x("10111110");
+	std::vector<int64_t> ff = x.auto_cor();
+	std::cout << "auto_cor=";
+	for (auto i : ff)
+	{
+		std::cout << " " << i;
+	}
+
+	std::cout << "\npc_k=" << x.pc_k();
+	std::cout << "\nCN_f=" << x.cn_f();
 
 	return 0;
 }

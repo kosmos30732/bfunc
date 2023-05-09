@@ -457,6 +457,83 @@ public:
 		return f;
 	}
 	
+	std::vector<int64_t> auto_cor()
+	{
+		std::vector<int64_t> f(len);
+		if (len < 32)
+		{
+			for (size_t i = 0; i < len; i++)
+			{
+				if (vec[0] & (1 << (len - i - 1)))
+				{
+					f[i] = -1;
+				}
+				else
+				{
+					f[i] = 1;
+				}
+			}
+		}
+		else
+		{
+			for (size_t i = 0; i < vec_len; i++)
+			{
+				for (size_t j = 0; j < 32; j++)
+				{
+					if (vec[vec_len - 1 - i] & (1 << (31 - j)))
+					{
+						f[j + 32 * i] = -1;
+					}
+					else
+					{
+						f[j + 32 * i] = 1;
+					}
+				}
+			}
+		}
+
+		uint32_t l_2 = log2(len);
+		for (uint32_t k = 0; k < l_2; k++)
+		{
+			for (uint32_t l = 0; l < (1 << (l_2 - 1 - k)); l++)
+			{
+				for (uint32_t i = l * (1 << (k + 1)), j = i + (1 << k), p = 0; p < (1 << k); p++, i++, j++)
+				{
+					f[i] = f[i] + f[j];
+				}
+				for (uint32_t i = l * (1 << (k + 1)), j = i + (1 << k), p = 0; p < (1 << k); p++, i++, j++)
+				{
+					f[j] = f[i] - f[j] - f[j];
+				}
+			}
+		}
+		for (uint64_t h = 0; h < f.size(); h++)
+		{
+			f[h] = f[h]* f[h];
+		}
+
+		for (uint32_t k = 0; k < l_2; k++)
+		{
+			for (uint32_t l = 0; l < (1 << (l_2 - 1 - k)); l++)
+			{
+				for (uint32_t i = l * (1 << (k + 1)), j = i + (1 << k), p = 0; p < (1 << k); p++, i++, j++)
+				{
+					f[i] = f[i] + f[j];
+				}
+				for (uint32_t i = l * (1 << (k + 1)), j = i + (1 << k), p = 0; p < (1 << k); p++, i++, j++)
+				{
+					f[j] = f[i] - f[j] - f[j];
+				}
+			}
+		}
+		for (uint64_t h = 0; h < f.size(); h++)
+		{
+			f[h] = f[h] >> l_2;
+		}
+
+		return f;
+	}
+
 	uint32_t cor_i()
 	{
 		std::vector<int32_t>_f = this->yolsha();
@@ -489,6 +566,50 @@ public:
 			res++;
 		}
 		return res;
+	}
+
+	uint32_t pc_k()
+	{
+		std::vector<int64_t>_f = this->auto_cor();
+		uint32_t n = log2(_f.size()), a = 0, b = 0, c = 0, tmp = 0, tmp_a = 0, res = 0;
+		for (size_t k = 1; k <= n; k++)
+		{
+			a = ((1 << k) - 1) << (n - k);
+			tmp_a = a;
+			while (true)
+			{
+				if (_f[a] != 0)
+				{
+					return res;
+				}
+				b = (a + 1) & a;
+				tmp = (b - 1) ^ a;
+				tmp = (tmp & 0x55555555L) + ((tmp >> 1) & 0x55555555L);
+				tmp = (tmp & 0x33333333L) + ((tmp >> 2) & 0x33333333L);
+				tmp = (tmp + (tmp >> 4)) & 0x0F0F0F0FL;
+				tmp = tmp + (tmp >> 8);
+				c = (uint8_t)(tmp + (tmp >> 16)) & 0x3F;
+				c -= 2;
+				a = (((((a + 1) ^ a) << 1) + 1) << c) ^ b;
+				if (a > tmp_a)
+				{
+					break;
+				}
+				tmp_a = a;
+			}
+			res++;
+		}
+		return res;
+
+	}
+
+	uint32_t cn_f()
+	{
+		std::vector<int64_t>_f = this->auto_cor();
+		auto minmax = std::minmax_element(_f.begin() + 1, _f.end());
+		uint32_t m_x = std::max(std::abs(*minmax.first), *minmax.second);
+		uint32_t cnf = (len >> 2) - ((m_x) >> 2);
+		return cnf;
 	}
 
 	std::string nf_nap()

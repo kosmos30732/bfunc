@@ -4,7 +4,9 @@
 #include <bitset>
 #include <vector>
 #include <algorithm>
-
+//uint32_t 10000101
+//<=32 столбца
+//ранг матрицы
 
 class BF
 {
@@ -456,7 +458,7 @@ public:
 		}
 		return f;
 	}
-	
+
 	std::vector<int64_t> auto_cor()
 	{
 		std::vector<int64_t> f(len);
@@ -509,7 +511,7 @@ public:
 		}
 		for (uint64_t h = 0; h < f.size(); h++)
 		{
-			f[h] = f[h]* f[h];
+			f[h] = f[h] * f[h];
 		}
 
 		for (uint32_t k = 0; k < l_2; k++)
@@ -619,11 +621,11 @@ public:
 		uint32_t m_x = std::max(std::abs(*minmax.first), *minmax.second);
 		uint32_t nf = (len >> 1) - ((m_x) >> 1);
 		std::string res;
-		res += "N_f ="+std::to_string(nf) + " \nNAP:\n\t";
+		res += "N_f =" + std::to_string(nf) + " \nNAP:\n\t";
 		uint32_t n = log2(len);
 		for (size_t i = 0; i < _f.size(); i++)
 		{
-			if (std::abs(_f[i])==m_x)
+			if (std::abs(_f[i]) == m_x)
 			{
 				std::bitset<32> st2(i);
 				std::string str2 = st2.to_string();
@@ -637,7 +639,7 @@ public:
 						res += "+";
 					}
 				}
-				if (_f[i]<0)
+				if (_f[i] < 0)
 				{
 					res += "1\n\t";
 				}
@@ -649,5 +651,153 @@ public:
 			}
 		}
 		return res;
+	}
+
+
+};
+
+class BM
+{
+	uint64_t rows = 1, columns = 1;
+	uint64_t* row = nullptr;
+
+public:
+	BM()
+	{
+		row = new uint64_t[rows];
+		row[0] = 0;
+	}
+
+	~BM()
+	{
+		if (row != nullptr)
+		{
+			delete[] row;
+			row = nullptr;
+		}
+	}
+
+	BM(const BM& other)
+	{
+		rows = other.rows;
+		columns = other.columns;
+		row = new uint64_t[rows];
+
+		for (uint64_t i = 0; i < rows; i++)
+		{
+			row[i] = other.row[i];
+		}
+	}
+
+	BM& operator = (const BM& other)
+	{
+		//самоприсваивание
+		if (this == &other)
+		{
+			return *this;
+		}
+
+		//чистим мусор
+		if (row != nullptr)
+		{
+			delete[] row;
+		}
+
+		rows = other.rows;
+		columns = other.columns;
+		row = new uint64_t[rows];
+
+		for (uint64_t i = 0; i < rows; i++)
+		{
+			row[i] = other.row[i];
+		}
+		return *this;
+	}
+
+	BM set_matrix(std::string str)
+	{
+		uint64_t str_len = str.length();
+		if (str_len & (str_len - 1))
+		{
+			std::cout << "The length can only be a power of 2\n";
+			exit(1);
+		}
+		uint64_t n = log2(str_len), idx_row = 0;
+		BM matrix;
+		delete[] matrix.row;
+		matrix.row = new uint64_t[str_len];
+		for (uint64_t i = 0; i < str_len; i++)
+		{
+			if (str[i] == '1')
+			{
+				matrix.row[idx_row] = uint64_t(1) << 63 | i << (63 - n);
+				idx_row++;
+			}
+		}
+		matrix.rows = idx_row;
+		uint64_t idx_column = n + 1, k = 2;
+		while (k != n)
+		{
+			std::vector<int> ints(k);
+			std::vector<int>::iterator first = ints.begin(), last = ints.end();
+			for (uint64_t i = 0; i < k; i++)
+			{
+				ints[i] = i + 1;
+			}
+			uint64_t tmp = 0;
+			for (uint64_t i = 0; i < matrix.rows; i++)
+			{
+				tmp = 0;
+				for (uint64_t j = 0; j < k; j++)
+				{
+					if ((matrix.row[i] >> (63 - ints[j])) & (uint64_t(1) << 0))
+					{
+						tmp++;
+					}
+				}
+				if (tmp == k)
+				{
+					matrix.row[i] |= uint64_t(1) << 63 - idx_column;
+				}
+			}
+			idx_column++;
+			while ((*first) != n - k + 1) {
+				std::vector<int>::iterator mt = last;
+				while (*(--mt) == n - (last - mt) + 1);
+				(*mt)++;
+				while (++mt != last) *mt = *(mt - 1) + 1;
+				for (uint64_t i = 0; i < matrix.rows; i++)
+				{
+					tmp = 0;
+					for (uint64_t j = 0; j < k; j++)
+					{
+						if ((matrix.row[i] >> (63 - ints[j])) & (uint64_t(1) << 0))
+						{
+							tmp++;
+						}
+					}
+					if (tmp == k)
+					{
+						matrix.row[i] |= uint64_t(1) << 63 - idx_column;
+					}
+				}
+				idx_column++;
+			}
+			k++;
+		}
+		matrix.columns = idx_column;
+		return matrix;
+	}
+
+	friend std::ostream& operator <<(std::ostream& out, BM& other)
+	{
+		for (uint64_t i = 0; i < other.rows; i++)
+		{
+			std::bitset<64> st(other.row[i]);
+			std::string str = st.to_string();
+			str.erase(other.columns, 64 - other.columns);
+			out << str << std::endl;
+		}
+		return out;
 	}
 };

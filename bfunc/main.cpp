@@ -186,17 +186,20 @@ int main()
 	//{
 	//	std::cout << " " << i;
 	//}
+	//BF x("10100100");
+	//std::vector<int64_t> ff = x.auto_cor();
+	//std::cout << "auto_cor=";
+	//for (auto i : ff)
+	//{
+	//	std::cout << " " << i;
+	//}
 
-	BF x("10111110");
-	std::vector<int64_t> ff = x.auto_cor();
-	std::cout << "auto_cor=";
-	for (auto i : ff)
-	{
-		std::cout << " " << i;
-	}
+	//std::cout << "\npc_k=" << x.pc_k();
+	//std::cout << "\nCN_f=" << x.cn_f();
 
-	std::cout << "\npc_k=" << x.pc_k();
-	std::cout << "\nCN_f=" << x.cn_f();
 
+	BM f;
+	f=f.set_matrix("11001100110011001100110011001100");
+	std::cout << f;
 	return 0;
 }
